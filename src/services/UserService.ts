@@ -1,11 +1,13 @@
 import { User } from './../entities/User';
-import { ERROR_STATUS, READY_STATUS } from "../returnResponses";
+import { READY_STATUS } from "../helpers/returnResponses";
+import { BadRequestError } from '../helpers/api-errors';
 
 export default class UserService {
   async create(body: User) {
     const {name, password, login} = body;
     if (!name || !password || !login) {
-      return ERROR_STATUS.METHOD_NOT_ALLOWED;
+      throw new BadRequestError("Dados inválidos!");
+      
     }
     return READY_STATUS.CREATED;
   }
