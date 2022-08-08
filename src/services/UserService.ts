@@ -1,7 +1,8 @@
 import { User } from './../entities/User';
 import { READY_STATUS } from "../helpers/returnResponses";
-import { BadRequestError } from '../helpers/api-errors';
+import { BadRequestError, UnauthorizedError } from '../helpers/api-errors';
 import { userRepository } from '../repositories/userRespository';
+import bcrypt from 'bcrypt';
 
 export default class UserService {
   async create(body: User) {
@@ -13,7 +14,10 @@ export default class UserService {
     if (isLogin) {
       throw new BadRequestError("Login em uso. Tente outro!");
     }
-    const newUser = userRepository.create({name, login, password})
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const newUser = userRepository.create({name, login, password: hashPassword});
     await userRepository.save(newUser);
     return READY_STATUS.CREATED;
   }
